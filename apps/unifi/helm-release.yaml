@@ -22,22 +22,6 @@ spec:
             image:
               repository: jacobalberty/unifi
               tag: v7.4.162
-            ports:
-            - name: stun
-              containerPort: 3478
-              protocol: UDP
-            - name: discovery
-              containerPort: 3478
-              protocol: UDP
-            - name: control
-              containerPort: 8080
-              protocol: TCP
-            - name: https
-              containerPort: 8443
-              protocol: TCP
-            - name: speed
-              containerPort: 6789
-              protocol: TCP
     service:
       tcp:
         controller: main
