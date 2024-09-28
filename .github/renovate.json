@@ -12,23 +12,23 @@
     "ignorePaths": [ "**/flux-system/**" ],
     "flux": {
       "fileMatch": [
-        "(^|/)kube/.+\\.ya?ml(?:\\.j2)?$"
+        "\\.ya?ml$"
       ]
     },
     "helm-values": {
       "fileMatch": [
-        "(^|/)kube/.+\\.ya?ml(?:\\.j2)?$"
+        "\\.ya?ml$"
       ]
     },
     "kubernetes": {
       "fileMatch": [
-        "(^|/)kube/.+\\.ya?ml(?:\\.j2)?$"
+        "\\.ya?ml$"
       ]
     },
     "regexManagers": [
         {
           "description": "Process custom dependencies",
-          "fileMatch": ["(^|/)kube/.+\\.ya?ml(?:\\.j2)?$"],
+          "fileMatch": ["\\.ya?ml$"],
           "matchStrings": [
             "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\n.*?\"(?<currentValue>.*)\"\n"
           ],

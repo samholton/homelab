@@ -12,5 +12,9 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./infrastructure
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
   prune: true
   wait: true
