@@ -21,7 +21,7 @@ spec:
           main:
             image:
               repository: jacobalberty/unifi
-              tag: v7.4.162
+              tag: v7.5.176
     service:
       tcp:
         controller: main
