@@ -22,6 +22,7 @@ spec:
       ingressClass: &ingressClassInternal nginx-internal
       ingressClassResource:
         name: *ingressClassInternal
+        controllerValue: "k8s.io/ingress-nginx-internal"
       service:
         loadBalancerIP: 192.168.100.8
 ---
@@ -47,5 +48,6 @@ spec:
       ingressClass: &ingressClassExternal nginx-external
       ingressClassResource:
         name: *ingressClassExternal
+        controllerValue: "k8s.io/ingress-nginx-external"
       service:
         loadBalancerIP: 192.168.100.7
