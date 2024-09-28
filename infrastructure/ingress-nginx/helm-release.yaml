@@ -18,9 +18,9 @@ spec:
     controller:
       allowSnippetAnnotations: true
       electionID: ingress-controller-internal-leader
-      ingressClass: &ingressClassName nginx-internal
+      ingressClass: &ingressClassInternal nginx-internal
       ingressClassResource:
-        name: *ingressClassName
+        name: *ingressClassInternal
       service:
         loadBalancerIP: 192.168.100.8
 ---
@@ -28,7 +28,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: ingress-nginx-external
-  namespace: ingress-external
+  namespace: ingress-nginx-external
 spec:
   interval: 1h
   chart:
@@ -43,8 +43,8 @@ spec:
   values:
     controller:
       allowSnippetAnnotations: true
-      ingressClass: &ingressClassName nginx-external
+      ingressClass: &ingressClassExternal nginx-external
       ingressClassResource:
-        name: *ingressClassName
+        name: *ingressClassExternal
       service:
         loadBalancerIP: 192.168.100.7
