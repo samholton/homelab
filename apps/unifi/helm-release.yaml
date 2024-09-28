@@ -1,0 +1,75 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: unifi
+  namespace: unifi
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: app-template
+      version: 3.4.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: applications
+      interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: jacobalberty/unifi
+              tag: v7.4.162
+    service:
+      tcp:
+        type: LoadBalancer
+        loadBalancerIP: &loadBalancerIP 192.168.2.3
+        ports:
+          control:
+            port: 8080
+          https:
+            port: 8443
+          speed:
+            port: 6789
+      udp:
+        type: LoadBalancer
+        loadBalancerIP: *loadBalancerIP
+        ports:
+          stun:
+            port: 3478
+            protocol: UDP
+          discovery:
+            port: 10001
+            protocol: UDP
+    ingress:
+      main:
+        className: nginx-internal
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+          nginx.ingress.kubernetes.io/proxy-body-size: 1G
+        hosts:
+          - host: &host unifi.samholton.com
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: tcp
+                  port: https
+        tls:
+          - hosts:
+              - *host
+            secretName: unifi-tls
+    persistence:
+      storage:
+        existingClaim: unifi-storage
+        globalMounts:
+          - path: /unifi
+    env:
+      TZ: "America/New_York"
+      RUNAS_UID0: false
+      UNIFI_UID: 999
+      UNIFI_GID: 999
+      JVM_MAX_HEAP_SIZE: "512M"
