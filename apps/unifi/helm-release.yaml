@@ -12,7 +12,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: bjw-s
-        namespace: applications
+        namespace: flux-system
       interval: 1h
   values:
     controllers:
@@ -24,6 +24,7 @@ spec:
               tag: v7.4.162
     service:
       tcp:
+        controller: main
         type: LoadBalancer
         loadBalancerIP: &loadBalancerIP 192.168.2.3
         ports:
@@ -34,6 +35,7 @@ spec:
           speed:
             port: 6789
       udp:
+        controller: main
         type: LoadBalancer
         loadBalancerIP: *loadBalancerIP
         ports:
@@ -54,9 +56,8 @@ spec:
           - host: &host unifi.samholton.com
             paths:
               - path: /
-                pathType: Prefix
                 service:
-                  name: tcp
+                  identifier: tcp
                   port: https
         tls:
           - hosts:

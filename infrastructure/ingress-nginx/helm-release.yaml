@@ -13,6 +13,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: ingress-nginx
+        namespace: flux-system
       interval: 1h
   values:
     controller:
@@ -38,7 +39,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: ingress-nginx
-        namespace: ingress-nginx-internal
+        namespace: flux-system
       interval: 1h
   values:
     controller:
