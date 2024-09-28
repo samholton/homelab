@@ -1,0 +1,39 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+      "config:recommended",
+      ":disableRateLimiting",
+      ":dependencyDashboard",
+      ":semanticCommits",
+      ":timezone(America/New_York)"
+    ],
+    "dependencyDashboardTitle": "Renovate Dashboard",
+    "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
+    "ignorePaths": [ "**/flux-system/**" ],
+    "flux": {
+      "fileMatch": [
+        "(^|/)kube/.+\\.ya?ml(?:\\.j2)?$"
+      ]
+    },
+    "helm-values": {
+      "fileMatch": [
+        "(^|/)kube/.+\\.ya?ml(?:\\.j2)?$"
+      ]
+    },
+    "kubernetes": {
+      "fileMatch": [
+        "(^|/)kube/.+\\.ya?ml(?:\\.j2)?$"
+      ]
+    },
+    "regexManagers": [
+        {
+          "description": "Process custom dependencies",
+          "fileMatch": ["(^|/)kube/.+\\.ya?ml(?:\\.j2)?$"],
+          "matchStrings": [
+            "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\n.*?\"(?<currentValue>.*)\"\n"
+          ],
+          "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
+          "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+        }
+      ]
+  }
