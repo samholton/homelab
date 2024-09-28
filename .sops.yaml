@@ -1,0 +1,8 @@
+creation_rules:
+  - path_regex: kube/.+\.secret(\.sops)?\.ya?ml
+    input_type: yaml
+    encrypted_regex: ^(data|stringData)$
+    mac_only_encrypted: true
+    key_groups:
+      - age:
+          - age19rx6m2l3px23zwprh02ahv540uw0ueaq9gvuec3fmalw4w9tnu8qxgy9l0

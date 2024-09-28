@@ -1,0 +1,37 @@
+name: "Flux Diff"
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  diffs:
+    name: Compute diffs
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    strategy:
+      matrix:
+        resource:
+          - helmrelease
+          - kustomization
+    steps:
+      - name: Setup Flux CLI
+        uses: fluxcd/flux2/action@v2.3.0
+      - uses: allenporter/flux-local/action/diff@5.5.1
+        id: diff
+        with:
+          live-branch: main
+          path: "kube"
+          resource: ${{ matrix.resource }}
+      - name: PR Comments
+        uses: mshick/add-pr-comment@v2
+        if: ${{ steps.diff.outputs.diff != '' }}
+        with:
+          message-id: ${{ github.event.pull_request.number }}/${{ matrix.resource }}
+          message-failure: Unable to post kustomization diff
+          message: |
+            `````diff
+            ${{ steps.diff.outputs.diff }}
+            `````
