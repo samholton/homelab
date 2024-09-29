@@ -1,3 +1,57 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: zfs-nfs
+  namespace: democratic-csi
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: democratic-csi
+      version: '0.14.1'
+      sourceRef:
+        kind: HelmRepository
+        name: democratic-csi
+        namespace: flux-system
+      interval: 1h
+  values:
+    csiDriver:
+      # should be globally unique for a given cluster
+      name: "org.democratic-csi.nfs"
+    driver:
+      existingConfigSecret: zfs-nfs-config
+      config:
+        driver: freenas-api-nfs
+    storageClasses:
+    - name: freenas-nfs-csi
+      defaultClass: false
+      reclaimPolicy: Delete
+      volumeBindingMode: Immediate
+      allowVolumeExpansion: true
+      parameters:
+        # for block-based storage can be ext3, ext4, xfs
+        # for nfs should be nfs
+        fsType: nfs
+
+        # if true, volumes created from other snapshots will be
+        # zfs send/received instead of zfs cloned
+        # detachedVolumesFromSnapshots: "false"
+
+        # if true, volumes created from other volumes will be
+        # zfs send/received instead of zfs cloned
+        # detachedVolumesFromVolumes: "false"
+      mountOptions:
+      - noatime
+      - nfsvers=4
+      secrets:
+        provisioner-secret:
+        controller-publish-secret:
+        node-stage-secret:
+        node-publish-secret:
+        controller-expand-secret:
+    volumeSnapshotClasses: []
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
