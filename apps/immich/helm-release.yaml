@@ -1,0 +1,58 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+  namespace: immich
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: immich
+      version: 0.7.0
+      sourceRef:
+        kind: HelmRepository
+        name: immich
+        namespace: flux-system
+      interval: 1h
+  values:
+    image:
+      # renovate: datasource=github-releases depName=immich-app/immich
+      tag: v1.115.0
+    env:
+      TZ: "America/New_York"
+    immich:
+      persistence:
+        library:
+          existingClaim: immich-data
+    postgresql:
+      enabled: true
+      global:
+        postgresql:
+          auth:
+            username: immich
+            database: immich
+            existingSecret: immich-secret
+    redis:
+      enabled: true
+    server:
+      ingress:
+        main:
+          enabled: true
+          annotations:
+            nginx.ingress.kubernetes.io/proxy-body-size: "0"
+            cert-manager.io/cluster-issuer: "letsencrypt-prod"
+            nginx.ingress.kubernetes.io/configuration-snippet: |
+              more_set_headers "X-Content-Type-Options: nosniff";
+              more_set_headers "X-Frame-Options: DENY";
+              more_set_headers "X-Xss-Protection: 0";
+              more_set_headers "Referrer-Policy: same-origin"
+              more_set_headers "Strict-Transport-Security: max-age=15724800; includeSubDomains; preload";
+          hosts:
+            - host: &host immich.samholton.com
+              paths:
+                - path: "/"
+          tls:
+            - hosts:
+              - *host
+              secretName: immich-tls
+          ingressClassName: nginx-external
