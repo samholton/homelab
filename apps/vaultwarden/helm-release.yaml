@@ -1,0 +1,88 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: app-template
+      version: 3.4.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: vaultwarden/server
+              tag: 1.32.0
+    env:
+      SMTP_HOST:
+        valueFrom:
+          secretKeyRef:
+            name: &secret vaultwarden-secret
+            key: SMTP_HOST
+      SMTP_FROM:
+        valueFrom:
+          secretKeyRef:
+            name: *secret
+            key: SMTP_FROM
+      SMTP_FROM_NAME:
+        valueFrom:
+          secretKeyRef:
+            name: *secret
+            key: SMTP_FROM_NAME
+      SMTP_SECURITY:
+        valueFrom:
+          secretKeyRef:
+            name: *secret
+            key: SMTP_SECURITY
+      SMTP_PORT:
+        valueFrom:
+          secretKeyRef:
+            name: *secret
+            key: SMTP_PORT
+      SMTP_USERNAME:
+        valueFrom:
+          secretKeyRef:
+            name: *secret
+            key: SMTP_USERNAME
+      SMTP_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: *secret
+            key: SMTP_PASSWORD
+    service:
+      http:
+        controller: main
+        ports:
+          http:
+            port: 80
+    ingress:
+      main:
+        className: nginx-external
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-prod"
+          nginx.ingress.kubernetes.io/proxy-body-size: 1G
+        hosts:
+          - host: &host password.samholton.com
+            paths:
+              - path: /
+                service:
+                  identifier: http
+                  port: http
+        tls:
+          - hosts:
+              - *host
+            secretName: vaultwarden-tls
+    persistence:
+      storage:
+        existingClaim: vaultwarden-storage
+        globalMounts:
+          - path: /data
