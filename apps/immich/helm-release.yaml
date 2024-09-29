@@ -20,8 +20,8 @@ spec:
       tag: v1.115.0
     env:
       TZ: "America/New_York"
-      DB_USERNAME: immich
-      DB_DATABASE_NAME: immich
+      DB_USERNAME: &db_user immich
+      DB_DATABASE_NAME: &db_database immich
       DB_PASSWORD:
         valueFrom:
           secretKeyRef:
@@ -36,8 +36,8 @@ spec:
       global:
         postgresql:
           auth:
-            username: immich
-            database: immich
+            username: *db_user
+            database: *db_database
             existingSecret: immich-secret
     redis:
       enabled: true
