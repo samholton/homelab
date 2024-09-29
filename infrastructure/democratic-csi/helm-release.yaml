@@ -17,7 +17,7 @@ spec:
   values:
     csiDriver:
       # should be globally unique for a given cluster
-      name: "org.democratic-csi.nfs"
+      name: "org.democratic-csi.nfs-no-backup"
     driver:
       existingConfigSecret: zfs-nfs-no-backup-config
       config:
