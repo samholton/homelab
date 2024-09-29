@@ -20,6 +20,13 @@ spec:
       tag: v1.115.0
     env:
       TZ: "America/New_York"
+      DB_USERNAME: immich
+      DB_DATABASE_NAME: immich
+      DB_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secret
+            key: postgres-password
     immich:
       persistence:
         library:
