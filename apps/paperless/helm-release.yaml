@@ -1,0 +1,104 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: paperless
+  namespace: paperless
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: app-template
+      version: 3.4.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 1h
+  values:
+    controllers:
+      paperless:
+        containers:
+          main:
+            image:
+              repository: ghcr.io/paperless-ngx/paperless-ngx
+              tag: 2.11.6
+            env:
+              TZ: "America/New_York"
+              PAPERLESS_URL: https://paperless-new.samholton.com
+              PAPERLESS_CONSUMER_POLLING: 30
+              PAPERLESS_DISABLE_REGULAR_LOGIN: false
+              PAPERLESS_FILENAME_FORMAT: "{created_year}/{created_month}/{title}"
+              PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true}'
+              PAPERLESS_DATE_ORDER: "MDY"
+              PAPERLESS_FILENAME_DATE_ORDER: "YMD"
+              PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
+              PAPERLESS_SOCIAL_AUTO_SIGNUP: true
+              PAPERLESS_REDIS: redis://valkey:6379
+              PAPERLESS_CONSUMPTION_DIR: /data/scan
+              PAPERLESS_DATA_DIR: /data/data
+              PAPERLESS_EXPORT_DIR: /data/export
+              PAPERLESS_MEDIA_ROOT: /data/media
+              PAPERLESS_DBENGINE: postgresql
+              PAPERLESS_DBHOST: paperless-pg-rw
+              PAPERLESS_DBNAME: paperless
+              PAPERLESS_DBUSER:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-db-secret
+                    key: username
+              PAPERLESS_DBPASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-db-secret
+                    key: password
+            envFrom:
+              - secret: paperless-secret
+      valkey:
+        containers:
+          main:
+            image:
+              repository: docker.io/valkey/valkey
+              tag: 8.0.0
+    service:
+      paperless:
+        controller: paperless
+        ports:
+          http:
+            port: 8000
+      valkey:
+        controller: valkey
+        ports:
+          service:
+            port: 6379
+    ingress:
+      main:
+        className: nginx-internal
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-prod"
+          nginx.ingress.kubernetes.io/proxy-body-size: 1G
+        hosts:
+          - host: &host paperless-new.samholton.com
+            paths:
+              - path: /
+                service:
+                  identifier: paperless
+                  port: http
+        tls:
+          - hosts:
+              - *host
+            secretName: paperless-tls
+    persistence:
+      data:
+        existingClaim: paperless-data
+        advancedMounts:
+          paperless:
+            main:
+              - path: /data
+      consumption:
+        type: nfs
+        server: truenas
+        path: /mnt/the-pool/scan
+        advancedMounts:
+          paperless:
+            main:
+              - path: /data/scan
