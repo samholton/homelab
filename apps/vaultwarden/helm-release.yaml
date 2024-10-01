@@ -22,42 +22,42 @@ spec:
             image:
               repository: vaultwarden/server
               tag: 1.32.0
-    env:
-      SMTP_HOST:
-        valueFrom:
-          secretKeyRef:
-            name: &secret vaultwarden-secret
-            key: SMTP_HOST
-      SMTP_FROM:
-        valueFrom:
-          secretKeyRef:
-            name: *secret
-            key: SMTP_FROM
-      SMTP_FROM_NAME:
-        valueFrom:
-          secretKeyRef:
-            name: *secret
-            key: SMTP_FROM_NAME
-      SMTP_SECURITY:
-        valueFrom:
-          secretKeyRef:
-            name: *secret
-            key: SMTP_SECURITY
-      SMTP_PORT:
-        valueFrom:
-          secretKeyRef:
-            name: *secret
-            key: SMTP_PORT
-      SMTP_USERNAME:
-        valueFrom:
-          secretKeyRef:
-            name: *secret
-            key: SMTP_USERNAME
-      SMTP_PASSWORD:
-        valueFrom:
-          secretKeyRef:
-            name: *secret
-            key: SMTP_PASSWORD
+            env:
+              SMTP_HOST:
+                valueFrom:
+                  secretKeyRef:
+                    name: &secret vaultwarden-secret
+                    key: SMTP_HOST
+              SMTP_FROM:
+                valueFrom:
+                  secretKeyRef:
+                    name: *secret
+                    key: SMTP_FROM
+              SMTP_FROM_NAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: *secret
+                    key: SMTP_FROM_NAME
+              SMTP_SECURITY:
+                valueFrom:
+                  secretKeyRef:
+                    name: *secret
+                    key: SMTP_SECURITY
+              SMTP_PORT:
+                valueFrom:
+                  secretKeyRef:
+                    name: *secret
+                    key: SMTP_PORT
+              SMTP_USERNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: *secret
+                    key: SMTP_USERNAME
+              SMTP_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: *secret
+                    key: SMTP_PASSWORD
     service:
       http:
         controller: main
