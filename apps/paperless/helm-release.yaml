@@ -24,9 +24,11 @@ spec:
               tag: 2.11.6
             env:
               TZ: "America/New_York"
-              PAPERLESS_URL: https://paperless-new.samholton.com
+              PAPERLESS_URL: https://paperless.samholton.com
+              USERMAP_UID: "3005"
+              USERMAP_GID: "3006"
               PAPERLESS_CONSUMER_POLLING: 30
-              PAPERLESS_DISABLE_REGULAR_LOGIN: false
+              PAPERLESS_DISABLE_REGULAR_LOGIN: true
               PAPERLESS_FILENAME_FORMAT: "{created_year}/{created_month}/{title}"
               PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true}'
               PAPERLESS_DATE_ORDER: "MDY"
@@ -77,7 +79,7 @@ spec:
           cert-manager.io/cluster-issuer: "letsencrypt-prod"
           nginx.ingress.kubernetes.io/proxy-body-size: 1G
         hosts:
-          - host: &host paperless-new.samholton.com
+          - host: &host paperless.samholton.com
             paths:
               - path: /
                 service:
