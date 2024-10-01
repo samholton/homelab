@@ -33,7 +33,7 @@ spec:
               PAPERLESS_FILENAME_DATE_ORDER: "YMD"
               PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
               PAPERLESS_SOCIAL_AUTO_SIGNUP: true
-              PAPERLESS_REDIS: redis://valkey:6379
+              PAPERLESS_REDIS: redis://paperless-valkey:6379
               PAPERLESS_CONSUMPTION_DIR: /data/scan
               PAPERLESS_DATA_DIR: /data/data
               PAPERLESS_EXPORT_DIR: /data/export
