@@ -23,11 +23,11 @@ spec:
               repository: ghcr.io/hoarder-app/hoarder
               tag: 0.17.1
             env:
-              MEILI_ADDR: http://meilisearch:7700
-              BROWSER_WEB_URL: http://chrome:9222
+              MEILI_ADDR: http://hoarder-meilisearch:7700
+              BROWSER_WEB_URL: http://hoarder-chrome:9222
               DATA_DIR: /data
               NEXTAUTH_URL: https://hoarder.samholton.com
-              DISABLE_SIGNUPS: true
+              DISABLE_SIGNUPS: false
               OAUTH_WELLKNOWN_URL: https://authentik.samholton.com/application/o/hoarder/.well-known/openid-configuration
               OAUTH_PROVIDER_NAME: Holton Cloud Auth
             envFrom:
