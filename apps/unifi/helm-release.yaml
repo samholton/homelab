@@ -22,12 +22,12 @@ spec:
             image:
               repository: jacobalberty/unifi
               tag: v8.4.62
-    env:
-      TZ: "America/New_York"
-      RUNAS_UID0: false
-      UNIFI_UID: 999
-      UNIFI_GID: 999
-      JVM_MAX_HEAP_SIZE: "512M"
+            env:
+              TZ: "America/New_York"
+              RUNAS_UID0: false
+              UNIFI_UID: 999
+              UNIFI_GID: 999
+              JVM_MAX_HEAP_SIZE: "512M"
     service:
       tcp:
         controller: main

@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: unifi-storage
-  namespace: unifi
+  name: meili-storage
+  namespace: hoarder
 spec:
   accessModes:
     - ReadWriteOnce
   storageClassName: longhorn
   resources:
     requests:
-      storage: 4Gi
+      storage: 1Gi
