@@ -1,0 +1,60 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mosquitto
+  namespace: mosquitto
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: app-template
+      version: 3.5.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 1h
+  values:
+    configMaps:
+      config:
+        data:
+          mosquitto.conf: |-
+            persistence true
+            persistence_location /mosquitto/data
+
+            log_dest stdout
+            log_type all
+
+            allow_anonymous false
+            password_file /mosquitto/config/pwfile
+
+            listener 1883 0.0.0.0
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: eclipse-mosquitto
+              tag: 2.0.11
+    service:
+      tcp:
+        controller: main
+        type: LoadBalancer
+        loadBalancerIP: 192.168.2.5
+        ports:
+          tcp:
+            protocol: TCP
+            port: 1883
+    persistence:
+      mosquitto:
+        existingClaim: mosquitto-data
+      config:
+        type: configMap
+        identifier: config
+        globalMounts:
+          - path: /mosquitto/config/
+      pwfile:
+        type: secret
+        name: mosquitto-secret
+        globalMounts:
+          - path: /mosquitto/config/
