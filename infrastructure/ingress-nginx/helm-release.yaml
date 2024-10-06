@@ -18,6 +18,7 @@ spec:
   values:
     controller:
       allowSnippetAnnotations: true
+      kind: DaemonSet
       electionID: ingress-controller-internal-leader
       ingressClass: &ingressClassInternal nginx-internal
       ingressClassResource:
@@ -25,6 +26,7 @@ spec:
         controllerValue: "k8s.io/ingress-nginx-internal"
       service:
         loadBalancerIP: 192.168.100.8
+        externalTrafficPolicy: Local
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -45,9 +47,11 @@ spec:
   values:
     controller:
       allowSnippetAnnotations: true
+      kind: DaemonSet
       ingressClass: &ingressClassExternal nginx-external
       ingressClassResource:
         name: *ingressClassExternal
         controllerValue: "k8s.io/ingress-nginx-external"
       service:
         loadBalancerIP: 192.168.100.7
+        externalTrafficPolicy: Local
