@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: columbuslaserworks-config
+  namespace: columbuslaserworks
+data:
+  remoteip.conf: |-
+    LoadModule remoteip_module modules/mod_remoteip.so
+    RemoteIPHeader X-Real-IP
+    RemoteIPInternalProxy 10.0.0.0/8
+  php-custom.ini: |
+    upload_max_filesize = 1G
+    post_max_size = 1G
+    max_execution_time = 120
+    max_input_time = 120

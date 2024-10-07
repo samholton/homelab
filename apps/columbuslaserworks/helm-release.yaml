@@ -1,0 +1,62 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: columbuslaserworks
+  namespace: columbuslaserworks
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: wordpress
+      version: 22.4.18
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+      interval: 1h
+  values:
+    wordpressUsername: sam
+    existingSecret: columbuslaserworks-secret
+    wordpressEmail: samholton@gmail.com
+    wordpressFirstName: Sam
+    wordpressLastName: Holton
+    wordpressBlogName: Columbus Laser Works
+    wordpressConfigureCache: false
+    service:
+      type: ClusterIP
+    updateStrategy:
+      type: Recreate
+    ingress:
+      enabled: true
+      ingressClassName: "nginx-external"
+      hostname: columbuslaserworks.com
+      path: /
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/proxy-body-size: 1G
+        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+      tls: true
+      tlsWwwPrefix: true
+    persistence:
+      enabled: true
+      storageClass: "longhorn"
+      accessModes:
+        - ReadWriteMany
+      size: 25Gi
+    mariadb:
+      primary:
+        persistence:
+          storageClass: longhorn
+          size: 8Gi
+    extraVolumeMounts:
+      - name: columbuslaserworks-config
+        mountPath: /opt/bitnami/php/etc/conf.d/php-custom.ini
+        subPath: php-custom.ini
+      - name: columbuslaserworks-config
+        mountPath: /opt/bitnami/apache/conf.default/vhosts/remoteip.conf
+        subPath: remoteip.conf
+    extraVolumes:
+      - name: columbuslaserworks-config
+        configMap:
+          defaultMode: 420
+          name: columbuslaserworks-config
