@@ -1,0 +1,66 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: coffeepluskids
+  namespace: coffeepluskids
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: wordpress
+      version: 23.0.9
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+      interval: 1h
+  values:
+    wordpressUsername: colleen
+    existingSecret: coffeepluskids-secret
+    wordpressEmail: cmholton21@gmail.com
+    wordpressFirstName: Colleen
+    wordpressLastName: Holton
+    wordpressBlogName: Coffee + Kids
+    wordpressConfigureCache: true
+    service:
+      type: ClusterIP
+    updateStrategy:
+      type: Recreate
+    ingress:
+      enabled: true
+      ingressClassName: "nginx-external"
+      hostname: coffeepluskids.com
+      path: /
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/proxy-body-size: 5G
+        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+      tls: true
+      tlsWwwPrefix: true
+    persistence:
+      enabled: true
+      storageClass: "longhorn"
+      accessModes:
+        - ReadWriteOnce
+      size: 15Gi
+    mariadb:
+      primary:
+        persistence:
+          storageClass: longhorn
+          size: 4Gi
+    memcached:
+      enabled: true
+      service:
+        port: 11211
+    extraVolumeMounts:
+      - name: coffeepluskids-config
+        mountPath: /opt/bitnami/php/etc/conf.d/php-custom.ini
+        subPath: php-custom.ini
+      - name: coffeepluskids-config
+        mountPath: /opt/bitnami/apache/conf.default/vhosts/remoteip.conf
+        subPath: remoteip.conf
+    extraVolumes:
+      - name: coffeepluskids-config
+        configMap:
+          defaultMode: 420
+          name: coffeepluskids-config
