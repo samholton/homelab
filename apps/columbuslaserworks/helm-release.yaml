@@ -22,6 +22,7 @@ spec:
     wordpressLastName: Holton
     wordpressBlogName: Columbus Laser Works
     wordpressConfigureCache: false
+    resourcesPreset: "large"
     service:
       type: ClusterIP
     updateStrategy:
