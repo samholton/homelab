@@ -1,0 +1,49 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: authentik
+      version: 2024.8.1
+      sourceRef:
+        kind: HelmRepository
+        name: authentik
+        namespace: flux-system
+      interval: 1h
+  values:
+    global:
+      env:
+        - name: AUTHENTIK_POSTGRESQL__USER
+          valueFrom:
+            secretKeyRef:
+              name: authentik-db-secret
+              key: username
+        - name: AUTHENTIK_POSTGRESQL__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authentik-db-secret
+              key: password
+      envFrom:
+        - secretRef:
+            name: authentik-secret
+    authentik:
+      error_reporting:
+        enabled: false
+    server:
+      ingress:
+        enabled: true
+        tls:
+          - hosts:
+            - authentik.samholton.com
+            secretName: authentik-tls
+        hosts:
+          - authentik.samholton.com
+        ingressClassName: nginx-external
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+    redis:
+      enabled: true
