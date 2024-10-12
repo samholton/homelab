@@ -25,10 +25,10 @@ spec:
             image:
               repository: hertzg/rtl_433
               tag: 23.11-alpine-3
-              args: [
-                "-F",
-                "mqtt://mqtt.samholton.com:1883,retain=1,events=rtl_433[/model][/id]"
-              ]
+            args: [
+              "-F",
+              "mqtt://mqtt.samholton.com:1883,retain=1,events=rtl_433[/model][/id]"
+            ]
             env:
               HOST: "k8s-rtl-433"
             envFrom:
