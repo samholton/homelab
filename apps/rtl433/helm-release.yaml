@@ -1,0 +1,49 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rtl433
+  namespace: rtl433
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: app-template
+      version: 3.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 1h
+  values:
+    defaultPodOptions:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-worker-1
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: hertzg/rtl_433
+              tag: 21.12-alpine-3
+            env:
+              HOST: "k8s-rtl-433"
+              # could not get rtl_433 to pick up
+            resources:
+              limits:
+                cpu: "1"
+                memory: 512Mi
+              requests:
+                cpu: ".5"
+                memory: 400Mi
+            securityContext:
+              privileged: true
+    persistence:
+      sdr:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/bus/usb/002/003
+      config:
+        type: secret
+        name: rtl433-secret
+        globalMounts:
+          - path: /root
