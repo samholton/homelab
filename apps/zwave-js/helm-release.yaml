@@ -81,7 +81,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: zwave-js-tls
+            secretName: zwave-js-cert
     persistence:
       zwave-usb:
         enabled: true
