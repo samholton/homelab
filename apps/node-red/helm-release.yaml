@@ -21,7 +21,7 @@ spec:
           main:
             image:
               repository: nodered/node-red
-              tag: 3.0.2
+              tag: 3.1.14
             env:
               TZ: "America/New_York"
     service:
