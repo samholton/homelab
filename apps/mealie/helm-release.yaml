@@ -40,7 +40,7 @@ spec:
                 valueFrom:
                   secretKeyRef:
                     name: mealie-db-secret
-                    key: username
+                    key: password
               POSTGRES_SERVER: mealie-pg-rw
               POSTGRES_PORT: 5432
               POSTGRES_DB: mealie
