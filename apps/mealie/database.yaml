@@ -1,0 +1,17 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: mealie-pg
+  namespace: mealie
+spec:
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: mealie
+      owner: mealie
+      secret:
+        name: mealie-db-secret
+  storage:
+    storageClass: longhorn
+    size: 2Gi

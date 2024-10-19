@@ -1,0 +1,81 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mealie
+  namespace: mealie
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: app-template
+      version: 3.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: ghcr.io/mealie-recipes/mealie
+              tag: v1.12.0
+            env:
+              ALLOW_SIGNUP: "false"
+              PUID: 1000
+              PGID: 1000
+              TZ: America/New_York
+              MAX_WORKERS: 1
+              WEB_CONCURRENCY: 1
+              BASE_URL: https://mealie.samholton.com
+              DB_ENGINE: postgres
+              POSTGRES_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: mealie-db-secret
+                    key: username
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: mealie-db-secret
+                    key: username
+              POSTGRES_SERVER: mealie-pg-rw
+              POSTGRES_PORT: 5432
+              POSTGRES_DB: mealie
+              OIDC_AUTH_ENABLED: true
+              OIDC_SIGNUP_ENABLED: true
+              OIDC_CONFIGURATION_URL: https://authentik.samholton.com/application/o/mealie/.well-known/openid-configuration
+              OIDC_AUTO_REDIRECT: true
+              OIDC_REMEMBER_ME: true
+              OIDC_PROVIDER_NAME: Holton Cloud Auth
+            envFrom:
+              - secret: mealie-secret
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: 9000
+    ingress:
+      main:
+        className: nginx-external
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        hosts:
+          - host: &host mealie.samholton.com
+            paths:
+              - path: /
+                service:
+                  identifier: main
+                  port: http
+        tls:
+          - hosts:
+              - *host
+            secretName: mealie-tls
+    persistence:
+      data:
+        existingClaim: mealie-data
+        globalMounts:
+          - path: /app/data/
