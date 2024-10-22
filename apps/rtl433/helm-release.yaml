@@ -30,9 +30,6 @@ spec:
             ]
             env:
               HOST: "k8s-rtl-433"
-            envFrom:
-              - secretRef:
-                  name: rtl433-secret
             resources:
               limits:
                 cpu: "1"
