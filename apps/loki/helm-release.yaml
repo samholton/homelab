@@ -8,13 +8,14 @@ spec:
   chart:
     spec:
       chart: loki
-      version: 5.48.0
+      version: 6.18.0
       sourceRef:
         kind: HelmRepository
         name: grafana
         namespace: flux-system
       interval: 1h
   values:
+    deploymentMode: SingleBinary
     loki:
       auth_enabled: false
       commonConfig:
