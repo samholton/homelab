@@ -35,8 +35,12 @@ spec:
         retention_period: "14d"
       compactor:
         retention_enabled: true
+        delete_request_store: filesystem
       storage:
         type: 'filesystem'
+      storage_config:
+        filesystem:
+          directory: /var/loki/data
     singleBinary:
       replicas: 1
       persistence:
