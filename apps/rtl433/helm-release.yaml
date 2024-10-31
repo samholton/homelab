@@ -24,7 +24,7 @@ spec:
           main:
             image:
               repository: hertzg/rtl_433
-              tag: 23.11-alpine-3
+              tag: 24.10-alpine-3
             args: [
               "-F", "log"
             ]
