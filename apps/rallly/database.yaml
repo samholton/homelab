@@ -1,0 +1,17 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: rallly-pg
+  namespace: rallly
+spec:
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: rallly
+      owner: rallly
+      secret:
+        name: rallly-db-secret
+  storage:
+    storageClass: longhorn
+    size: 2Gi
