@@ -24,7 +24,7 @@ spec:
           main:
             image:
               repository: zwavejs/zwave-js-ui
-              tag: 9.26.0
+              tag: 9.27.1
             probes:
               liveness:
                 enabled: true
