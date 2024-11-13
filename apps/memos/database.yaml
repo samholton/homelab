@@ -1,0 +1,17 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: memos-pg
+  namespace: memos
+spec:
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: memos
+      owner: memos
+      secret:
+        name: memos-db-secret
+  storage:
+    storageClass: longhorn
+    size: 1Gi
