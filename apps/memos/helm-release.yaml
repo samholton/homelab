@@ -1,0 +1,50 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: memos
+  namespace: memos
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: app-template
+      version: 3.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: neosmemo/memos
+              tag: 0.22.5
+            env:
+              MEMOS_DRIVER: postgres
+            envFrom:
+              - secret: memos-secret
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: 5230
+    ingress:
+      main:
+        className: nginx-external
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        hosts:
+          - host: &host memos.samholton.com
+            paths:
+              - path: /
+                service:
+                  identifier: main
+                  port: http
+        tls:
+          - hosts:
+              - *host
+            secretName: memos-tls
