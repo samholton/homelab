@@ -1,0 +1,25 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: immich-pg
+  namespace: mfp-immich
+spec:
+  imageName: tensorchord/cloudnative-pgvecto-rs:16.5-v0.3.0
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: immich
+      owner: immich
+      secret:
+        name: immich-db-secret
+      postInitSQL:
+        - ALTER USER immich WITH SUPERUSER;
+        - ALTER SYSTEM SET search_path TO "$user", public, vectors;
+        - CREATE EXTENSION IF NOT EXISTS "vectors";
+  postgresql:
+    shared_preload_libraries:
+      - "vectors.so"
+  storage:
+    storageClass: longhorn
+    size: 16Gi
