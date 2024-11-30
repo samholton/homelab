@@ -22,6 +22,8 @@ spec:
             image:
               repository: ghcr.io/samholton/myforeverphotos
               tag: main
+              pullPolicy: Always
+        strategy: RollingUpdate
     service:
       main:
         controller: main
