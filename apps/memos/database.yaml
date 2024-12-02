@@ -4,7 +4,7 @@ metadata:
   name: memos-pg
   namespace: memos
 spec:
-  instances: 1
+  instances: 2
   primaryUpdateStrategy: unsupervised
   bootstrap:
     initdb:

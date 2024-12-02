@@ -4,7 +4,7 @@ metadata:
   name: authentik-pg
   namespace: authentik
 spec:
-  instances: 1
+  instances: 2
   primaryUpdateStrategy: unsupervised
   bootstrap:
     initdb:

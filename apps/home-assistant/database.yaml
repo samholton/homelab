@@ -4,7 +4,7 @@ metadata:
   name: home-assistant-pg
   namespace: home-assistant
 spec:
-  instances: 1
+  instances: 2
   primaryUpdateStrategy: unsupervised
   bootstrap:
     initdb:
