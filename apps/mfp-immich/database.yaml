@@ -5,7 +5,7 @@ metadata:
   namespace: mfp-immich
 spec:
   imageName: tensorchord/cloudnative-pgvecto-rs:16.5-v0.3.0
-  instances: 1
+  instances: 2
   primaryUpdateStrategy: unsupervised
   bootstrap:
     initdb:
