@@ -27,6 +27,7 @@ spec:
           secretKeyRef:
             name: immich-secret
             key: postgres-password
+      MACHINE_LEARNING_PRELOAD__CLIP: "ViT-L-16-SigLIP-384__webli"
     immich:
       persistence:
         library:
