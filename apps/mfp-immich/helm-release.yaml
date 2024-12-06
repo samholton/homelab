@@ -20,6 +20,7 @@ spec:
       tag: v1.122.0
     env:
       TZ: "America/New_York"
+      MACHINE_LEARNING_PRELOAD__CLIP: "ViT-L-16-SigLIP-384__webli"
       DB_HOSTNAME:
         valueFrom:
           secretKeyRef:
