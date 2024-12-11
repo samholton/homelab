@@ -47,3 +47,5 @@ spec:
           cert-manager.io/cluster-issuer: letsencrypt-prod
     redis:
       enabled: true
+      master:
+        resourcesPreset: medium
