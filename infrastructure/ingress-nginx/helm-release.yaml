@@ -18,6 +18,8 @@ spec:
   values:
     controller:
       allowSnippetAnnotations: true
+      config:
+        annotations-risk-level: Critical
       kind: DaemonSet
       electionID: ingress-controller-internal-leader
       ingressClass: &ingressClassInternal nginx-internal
@@ -47,6 +49,8 @@ spec:
   values:
     controller:
       allowSnippetAnnotations: true
+      config:
+        annotations-risk-level: Critical
       kind: DaemonSet
       ingressClass: &ingressClassExternal nginx-external
       ingressClassResource:
