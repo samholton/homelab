@@ -21,7 +21,7 @@ spec:
           main:
             image:
               repository: ghcr.io/mealie-recipes/mealie
-              tag: v2.4.2
+              tag: v2.5.0
             env:
               ALLOW_SIGNUP: "false"
               PUID: 1000
