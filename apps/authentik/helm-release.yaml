@@ -38,10 +38,10 @@ spec:
         enabled: true
         tls:
           - hosts:
-            - authentik.samholton.com
+            - &host authentik.samholton.com
             secretName: authentik-tls
         hosts:
-          - authentik.samholton.com
+          - *host
         ingressClassName: nginx-external
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt-prod
