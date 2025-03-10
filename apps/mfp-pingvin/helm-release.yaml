@@ -21,7 +21,7 @@ spec:
           main:
             image:
               repository: stonith404/pingvin-share
-              tag: v1.10.2
+              tag: v1.10.3
             env:
               TRUST_PROXY: "true"
     service:
