@@ -14,4 +14,4 @@ spec:
         name: memos-db-secret
   storage:
     storageClass: longhorn
-    size: 1Gi
+    size: 4Gi
