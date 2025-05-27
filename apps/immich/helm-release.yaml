@@ -20,28 +20,33 @@ spec:
       tag: v1.133.1
     env:
       TZ: "America/New_York"
-      DB_USERNAME: &db_user immich
-      DB_DATABASE_NAME: &db_database immich
+      MACHINE_LEARNING_PRELOAD__CLIP: "ViT-L-16-SigLIP-384__webli"
+      DB_HOSTNAME:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secret
+            key: DB_HOSTNAME
+      DB_USERNAME:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secret
+            key: DB_USERNAME
       DB_PASSWORD:
         valueFrom:
           secretKeyRef:
             name: immich-secret
-            key: postgres-password
-      MACHINE_LEARNING_PRELOAD__CLIP: "ViT-L-16-SigLIP-384__webli"
+            key: DB_PASSWORD
+      DB_DATABASE_NAME:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secret
+            key: DB_DATABASE_NAME
     immich:
       persistence:
         library:
           existingClaim: immich-data
     postgresql:
-      enabled: true
-      global:
-        postgresql:
-          auth:
-            username: *db_user
-            database: *db_database
-            existingSecret: immich-secret
-      primary:
-        resourcesPreset: "large"
+      enabled: false
     redis:
       enabled: true
     server:
