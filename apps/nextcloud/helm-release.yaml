@@ -1,0 +1,198 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: nextcloud
+      version: 6.6.10
+      sourceRef:
+        kind: HelmRepository
+        name: nextcloud
+        namespace: flux-system
+      interval: 1h
+  values:
+    replicaCount: 1
+
+    ingress:
+      enabled: true
+      className: nginx-external
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: 4G
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+
+      nginx.ingress.kubernetes.io/server-snippet: |-
+        server_tokens off;
+        proxy_hide_header X-Powered-By;
+
+        rewrite ^/.well-known/webfinger /public.php?service=webfinger last;
+        rewrite ^/.well-known/host-meta /public.php?service=host-meta last;
+        rewrite ^/.well-known/host-meta.json /public.php?service=host-meta-json;
+        location = /.well-known/carddav {
+          return 301 $scheme://$host/remote.php/dav;
+        }
+        location = /.well-known/caldav {
+          return 301 $scheme://$host/remote.php/dav;
+        }
+        location = /robots.txt {
+          allow all;
+          log_not_found off;
+          access_log off;
+        }
+        location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)/ {
+          deny all;
+        }
+        location ~ ^/(?:autotest|occ|issue|indie|db_|console) {
+          deny all;
+        }
+
+      tls:
+        - secretName: nextcloud-tls
+          hosts:
+            - nextcloud.samholton.com
+
+    nextcloud:
+      host: nextcloud.samholton.com
+      existingSecret:
+        enabled: true
+        secretName: nextcloud-secret
+        usernameKey: nextcloud-username
+        passwordKey: nextcloud-password
+      extraEnv:
+        - name: PHP_MEMORY_LIMIT
+          value: 2G
+        - name: PHP_UPLOAD_LIMIT
+          value: 5G
+      strategy:
+        # type: Recreate
+        type: RollingUpdate
+
+      datadir: /nextcloud-data
+
+      extraVolumes:
+        - name: nextcloud-apache-config
+          configMap:
+            defaultMode: 420
+            name: nextcloud-apache-config
+      extraVolumeMounts:
+        - mountPath: /etc/apache2/conf-enabled/remoteip.conf
+          name: nextcloud-apache-config 
+          subPath: remoteip.conf
+
+      configs:
+        https.config.php: |-
+          <?php
+          $CONFIG = array (
+            'overwriteprotocol' => 'https'
+          );
+        proxy.config.php: |-
+          <?php
+          $CONFIG = array (
+            'trusted_proxies' => array(
+              0 => '127.0.0.1',
+              1 => '10.0.0.0/8',
+            ),
+            'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
+          );
+
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      accessMode: ReadWriteMany
+      size: 4Gi
+
+      nextcloudData:
+        enabled: true
+        existingClaim: nextcloud-data
+
+    internalDatabase:
+      enabled: false
+
+    externalDatabase:
+      enabled: true
+      database: nextcloud
+      existingSecret:
+        enabled: false
+        secretName: nextcloud-db-secret
+        usernameKey: username
+        passwordKey: password
+
+    mariadb:
+      enabled: false
+
+    redis:
+      enabled: true
+      architecture: standalone
+      auth:
+        enabled: true
+        existingSecret: nextcloud-secret
+        existingSecretPasswordKey: redis-password
+      master:
+        persistence:
+          storageClass: longhorn
+          size: 2Gi
+      # replica:
+      #   persistence:
+      #     storageClass: longhorn
+
+    ## Liveness and readiness probe values
+    ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes
+    ##
+    livenessProbe:
+      enabled: false
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    readinessProbe:
+      enabled: false
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    startupProbe:
+      enabled: false
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 30
+      successThreshold: 1
+
+    ## Cronjob to execute Nextcloud background tasks
+    ## ref: https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#webcron
+    ##
+    cronjob:
+      enabled: true
+      # Nexcloud image is used as default but only curl is needed
+      image: {}
+        # repository: nextcloud
+        # tag: 16.0.3-apache
+        # pullPolicy: IfNotPresent
+        # pullSecrets:
+        #   - myRegistrKeySecretName
+      # Every 5 minutes
+      # Note: Setting this to any any other value than 5 minutes might
+      #  cause issues with how nextcloud background jobs are executed
+      schedule: "*/5 * * * *"
+      annotations: {}
+      # Set curl's insecure option if you use e.g. self-signed certificates
+      curlInsecure: true
+      failedJobsHistoryLimit: 5
+      successfulJobsHistoryLimit: 2
+      # If not set, nextcloud deployment one will be set
+      # resources:
+        # We usually recommend not to specify default resources and to leave this as a conscious
+        # choice for the user. This also increases chances charts run on environments with little
+        # resources, such as Minikube. If you do want to specify resources, uncomment the following
+        # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+        # limits:
+        #  cpu: 100m
+        #  memory: 128Mi
+        # requests:
+        #  cpu: 100m
+        #  memory: 128Mi
