@@ -18,10 +18,10 @@ spec:
     ingress:
       enabled: true
       ingressClassName: "nginx-external"
-      url: &host "plex.samholton.com"
+      url: "https://plex.samholton.com"
       tls:
         - hosts:
-            - *host
+            - plex.samholton.com
           secretName: plex-tls
       annotations:
         cert-manager.io/cluster-issuer: "letsencrypt-prod"
