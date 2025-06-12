@@ -30,6 +30,7 @@ spec:
               tag: 1.41.8.9834-071366d65
             env:
               TZ: "America/New_York"
+              ADVERTISE_IP: "https://plex.samholton.com:443"
     service:
       plex:
         controller: plex
