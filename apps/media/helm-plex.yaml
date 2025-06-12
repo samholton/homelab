@@ -57,4 +57,4 @@ spec:
       media:
         existingClaim: media-library
       config:
-        existingClaim: plex-configs
+        existingClaim: plex-config
