@@ -7,37 +7,54 @@ spec:
   interval: 1h
   chart:
     spec:
-      chart: plex-media-server
-      version: 1.0.2
+      chart: app-template
+      version: 4.1.0
       sourceRef:
         kind: HelmRepository
-        name: plex
+        name: bjw-s
         namespace: flux-system
       interval: 1h
   values:
+    controllers:
+      plex:
+        defaultContainerOptions:
+          resources:
+              requests:
+                  gpu.intel.com/i915: "1"
+              limits:
+                  gpu.intel.com/i915: "1"
+        containers:
+          plex:
+            image:
+              repository: plexinc/pms-docker
+              tag: 1.41.8.9834-071366d65
+            env:
+              TZ: "America/New_York"
+    service:
+      plex:
+        controller: plex
+        ports:
+          pms:
+            port: 32400
+            protocol: TCP
     ingress:
-      enabled: true
-      ingressClassName: "nginx-external"
-      url: "https://plex.samholton.com"
-      tls:
-        - hosts:
-            - plex.samholton.com
-          secretName: plex-tls
-      annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    pms:
-      configExistingClaim: plex-config
-      resources:
-          requests:
-              gpu.intel.com/i915: "1"
-          limits:
-              gpu.intel.com/i915: "1"
-    extraEnv:
-      TZ: "America/New_York"
-    extraVolumes:
-      - name: media-library
-        persistentVolumeClaim:
-          claimName: media-library
-    extraVolumeMounts:
-     - mountPath: /media
-       name: media-library
+      plex:
+        className: nginx-external
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        hosts:
+          - host: &host plex.samholton.com
+            paths:
+              - path: /
+                service:
+                  identifier: plex
+                  port: pms
+        tls:
+          - hosts:
+              - *host
+            secretName: plex-tls
+    persistence:
+      media:
+        existingClaim: media-library
+      config:
+        existingClaim: plex-configs
