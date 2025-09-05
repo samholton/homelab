@@ -59,3 +59,12 @@ spec:
         existingClaim: media-library
       config:
         existingClaim: plex-config
+      sam-family-videos:
+        type: nfs
+        server: truenas
+        path: "/mnt/the-pool/k8s/vols/pvc-79096f63-a246-465e-96e2-a6e476f33d4e/data/sam/files/Sam Family Videos"
+        advancedMounts:
+          plex:
+            plex:
+              - path: /sam-family-videos
+                readOnly: true
