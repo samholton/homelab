@@ -14,4 +14,4 @@ spec:
         name: nextcloud-db-secret
   storage:
     storageClass: longhorn
-    size: 8Gi
+    size: 12Gi
