@@ -25,6 +25,11 @@
         "\\.ya?ml$"
       ]
     },
+    "docker-images": {
+      "plexinc/pms-docker": {
+        "versioning": "loose"
+      }
+    },
     "customManagers": [
       {
         "customType": "regex",
