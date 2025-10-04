@@ -14,4 +14,4 @@ spec:
         name: home-assistant-db-secret
   storage:
     storageClass: longhorn
-    size: 8Gi
+    size: 16Gi
