@@ -21,7 +21,7 @@ spec:
           main:
             image:
               repository: ghcr.io/paperless-ngx/paperless-ngx
-              tag: 2.19.2
+              tag: 2.20.3
             env:
               TZ: "America/New_York"
               PAPERLESS_URL: https://paperless.samholton.com
