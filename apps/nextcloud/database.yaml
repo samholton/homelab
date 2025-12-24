@@ -4,6 +4,7 @@ metadata:
   name: nextcloud-pg
   namespace: nextcloud
 spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.7
   instances: 2
   primaryUpdateStrategy: unsupervised
   bootstrap:
