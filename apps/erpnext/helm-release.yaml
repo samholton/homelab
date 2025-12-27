@@ -39,9 +39,8 @@ spec:
       migrate:
         enabled: true
         siteName: *host
-    redis-cache:
-      image:
-        repository: bitnamilegacy/redis
-    redis-queue:
-      image:
-        repository: bitnamilegacy/redis
+    mariadb-sts:
+      enabled: true
+      persistence:
+        storageClass: longhorn
+        size: 16Gi
