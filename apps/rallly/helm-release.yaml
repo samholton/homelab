@@ -21,7 +21,7 @@ spec:
           main:
             image:
               repository: lukevella/rallly
-              tag: 4.5.14
+              tag: 4.6.3
             env:
               NEXT_PUBLIC_BASE_URL: https://plan.samholton.com
             envFrom:
