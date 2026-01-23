@@ -77,4 +77,4 @@ spec:
             - hosts:
               - *host
               secretName: immich-tls
-          ingressClassName: nginx-external
+          className: nginx-external
