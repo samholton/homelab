@@ -26,7 +26,7 @@ jobs:
           path: "clusters/production"
           resource: ${{ matrix.resource }}
       - name: PR Comments
-        uses: mshick/add-pr-comment@v2
+        uses: mshick/add-pr-comment@v3
         if: ${{ steps.diff.outputs.diff != '' }}
         with:
           message-id: ${{ github.event.pull_request.number }}/${{ matrix.resource }}
