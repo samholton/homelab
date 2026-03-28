@@ -60,7 +60,7 @@ spec:
           main:
             image:
               repository: docker.io/valkey/valkey
-              tag: 9.0.1
+              tag: 9.0.3
     service:
       paperless:
         controller: paperless
