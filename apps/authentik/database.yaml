@@ -4,6 +4,7 @@ metadata:
   name: authentik-pg
   namespace: authentik
 spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.13
   instances: 2
   primaryUpdateStrategy: unsupervised
   bootstrap:
