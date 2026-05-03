@@ -15,12 +15,25 @@ spec:
         namespace: flux-system
       interval: 1h
   values:
+    machine-learning:
+      controllers:
+        main:
+          containers:
+            main:
+              image:
+                # renovate: datasource=github-releases depName=immich-app/immich
+                tag: v2.7.5-openvino
+              resources:
+                limits:
+                  gpu.intel.com/i915: "1"
+                requests:
+                  gpu.intel.com/i915: "1"
     controllers:
       main:
         containers:
           main:
             image:
-              # # renovate: datasource=github-releases depName=immich-app/immich
+              # renovate: datasource=github-releases depName=immich-app/immich
               tag: v2.7.5
             env:
               REDIS_HOSTNAME: '{{ printf "%s-valkey" .Release.Name }}'
