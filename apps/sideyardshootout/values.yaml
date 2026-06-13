@@ -1,0 +1,38 @@
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          repository: ghcr.io/samholton/sideyardshootout
+          tag: main
+          pullPolicy: Always
+    strategy: RollingUpdate
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 80
+ingress:
+  main:
+    className: nginx-external
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: sideyardshootout.com
+        paths:
+          - path: /
+            service:
+              identifier: main
+              port: http
+      - host: www.sideyardshootout.com
+        paths:
+          - path: /
+            service:
+              identifier: main
+              port: http
+    tls:
+      - hosts:
+          - sideyardshootout.com
+          - www.sideyardshootout.com
+        secretName: homepage-tls
