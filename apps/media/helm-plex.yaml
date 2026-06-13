@@ -17,12 +17,6 @@ spec:
   values:
     controllers:
       plex:
-        defaultContainerOptions:
-          resources:
-              requests:
-                  gpu.intel.com/i915: "1"
-              limits:
-                  gpu.intel.com/i915: "1"
         containers:
           plex:
             image:

@@ -23,11 +23,6 @@ spec:
               image:
                 # renovate: datasource=github-releases depName=immich-app/immich
                 tag: v2.7.5-openvino
-              resources:
-                limits:
-                  gpu.intel.com/i915: "1"
-                requests:
-                  gpu.intel.com/i915: "1"
     controllers:
       main:
         containers:
