@@ -25,6 +25,7 @@ spec:
             env:
               REDIS_HOSTNAME: '{{ printf "%s-valkey" .Release.Name }}'
               IMMICH_MACHINE_LEARNING_URL: '{{ printf "http://%s-machine-learning:3003" .Release.Name }}'
+              MACHINE_LEARNING_PRELOAD__CLIP__VISUAL: "ViT-L-16-SigLIP-384__webli"
               TZ: "America/New_York"
               DB_HOSTNAME:
                 valueFrom:

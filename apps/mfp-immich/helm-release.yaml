@@ -21,12 +21,12 @@ spec:
           main:
             image:
               # # renovate: datasource=github-releases depName=immich-app/immich
-              tag: v2.7.5
+              tag: v3.0.1
             env:
               REDIS_HOSTNAME: '{{ printf "%s-valkey" .Release.Name }}'
               IMMICH_MACHINE_LEARNING_URL: '{{ printf "http://%s-machine-learning:3003" .Release.Name }}'
+              MACHINE_LEARNING_PRELOAD__CLIP__VISUAL: "ViT-L-16-SigLIP-384__webli"
               TZ: "America/New_York"
-              MACHINE_LEARNING_PRELOAD__CLIP: "ViT-L-16-SigLIP-384__webli"
               DB_HOSTNAME:
                 valueFrom:
                   secretKeyRef:
