@@ -1,55 +1,67 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: homepage
+  name: sideyardshootout
   namespace: sideyardshootout
 spec:
   interval: 1h
   chart:
     spec:
-      chart: app-template
-      version: 5.2.1
+      chart: wordpress
+      version: 33.1.0
       sourceRef:
         kind: HelmRepository
-        name: bjw-s
+        name: bitnami
         namespace: flux-system
       interval: 1h
   values:
-    controllers:
-      main:
-        containers:
-          main:
-            image:
-              repository: ghcr.io/samholton/sideyardshootout
-              tag: main
-              pullPolicy: Always
-        strategy: RollingUpdate
+    wordpressUsername: sam
+    existingSecret: sideyardshootout-secret
+    wordpressEmail: samholton@gmail.com
+    wordpressFirstName: Sam
+    wordpressLastName: Holton
+    wordpressBlogName: Side Yard Shootout
+    wordpressConfigureCache: true
+    resourcesPreset: "xlarge"
     service:
-      main:
-        controller: main
-        ports:
-          http:
-            port: 80
+      type: ClusterIP
+    updateStrategy:
+      type: Recreate
     ingress:
-      main:
-        className: nginx-external
-        annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-prod
-        hosts:
-          - host: sideyardshootout.com
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-          - host: www.sideyardshootout.com
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - hosts:
-              - sideyardshootout.com
-              - www.sideyardshootout.com
-            secretName: homepage-tls
+      enabled: true
+      ingressClassName: "nginx-external"
+      hostname: sideyardshootout.com
+      path: /
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/proxy-body-size: 5G
+        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+      tls: true
+      tlsWwwPrefix: true
+    persistence:
+      enabled: true
+      storageClass: "longhorn"
+      accessModes:
+        - ReadWriteOnce
+      size: 15Gi
+    mariadb:
+      primary:
+        persistence:
+          storageClass: longhorn
+          size: 4Gi
+    memcached:
+      enabled: true
+      service:
+        port: 11211
+    extraVolumeMounts:
+      - name: sideyardshootout-config
+        mountPath: /opt/bitnami/php/etc/conf.d/php-custom.ini
+        subPath: php-custom.ini
+      - name: sideyardshootout-config
+        mountPath: /opt/bitnami/apache/conf.default/vhosts/remoteip.conf
+        subPath: remoteip.conf
+    extraVolumes:
+      - name: sideyardshootout-config
+        configMap:
+          defaultMode: 420
+          name: sideyardshootout-config
