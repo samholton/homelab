@@ -15,4 +15,4 @@ spec:
         name: authentik-db-secret
   storage:
     storageClass: longhorn
-    size: 16Gi
+    size: 32Gi
