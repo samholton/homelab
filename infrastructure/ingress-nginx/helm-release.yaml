@@ -20,6 +20,8 @@ spec:
       allowSnippetAnnotations: true
       config:
         annotations-risk-level: Critical
+        compute-full-forwarded-for: "true"
+        use-forwarded-headers: "true"
       kind: DaemonSet
       electionID: ingress-controller-internal-leader
       ingressClass: &ingressClassInternal nginx-internal
@@ -51,6 +53,8 @@ spec:
       allowSnippetAnnotations: true
       config:
         annotations-risk-level: Critical
+        compute-full-forwarded-for: "true"
+        use-forwarded-headers: "true"
       kind: DaemonSet
       ingressClass: &ingressClassExternal nginx-external
       ingressClassResource:

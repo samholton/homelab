@@ -23,6 +23,7 @@ spec:
       annotations:
         nginx.ingress.kubernetes.io/proxy-body-size: 4G
         cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
 
       nginx.ingress.kubernetes.io/server-snippet: |-
         server_tokens off;
@@ -72,28 +73,21 @@ spec:
 
       datadir: /nextcloud-data
 
-      extraVolumes:
-        - name: nextcloud-apache-config
-          configMap:
-            defaultMode: 420
-            name: nextcloud-apache-config
-      extraVolumeMounts:
-        - mountPath: /etc/apache2/conf-enabled/remoteip.conf
-          name: nextcloud-apache-config 
-          subPath: remoteip.conf
-
       configs:
         https.config.php: |-
           <?php
           $CONFIG = array (
-            'overwriteprotocol' => 'https'
+            'overwriteprotocol' => 'https',
+            'overwritesubport' => false,
           );
         proxy.config.php: |-
           <?php
           $CONFIG = array (
             'trusted_proxies' => array(
               0 => '127.0.0.1',
-              1 => '10.0.0.0/8',
+              1 => '10.96.0.0/12',
+              2 => '10.244.0.0/16',
+              3 => '192.168.2.1/32',
             ),
             'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
           );
