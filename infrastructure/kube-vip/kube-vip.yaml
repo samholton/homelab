@@ -22,19 +22,16 @@ spec:
         args:
         - manager
         env:
-        # Control plane VIP management (replaces static pod manifests)
-        - name: cp_enable
-          value: "true"
-        - name: cp_namespace
-          value: kube-system
         # API server port
         - name: port
           value: "6443"
         # VIP address — should be the control plane load balancer VIP
+        - name: cp_enable
+          value: "true"
         - name: address
           value: 192.168.2.30
         - name: vip_subnet
-          value: 32
+          value: "32"
         # Network configuration
         - name: vip_arp
           value: "false"
