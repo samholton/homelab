@@ -17,7 +17,7 @@ spec:
       hostNetwork: true
       containers:
       - name: kube-vip
-        image: ghcr.io/kube-vip/kube-vip:v0.8.2
+        image: ghcr.io/kube-vip/kube-vip:v1.3.1
         imagePullPolicy: IfNotPresent
         args:
         - manager
@@ -33,6 +33,8 @@ spec:
         # VIP address — should be the control plane load balancer VIP
         - name: address
           value: 192.168.2.30
+        - name: vip_subnet
+          value: 32
         # Network configuration
         - name: vip_arp
           value: "false"
@@ -42,8 +44,6 @@ spec:
               fieldPath: spec.nodeName
         - name: vip_interface
           value: lo
-        - name: vip_cidr
-          value: "32"
         - name: dns_mode
           value: first
         # Service load balancer support (for worker nodes)
@@ -66,7 +66,7 @@ spec:
           value: "64501"
         # Metrics
         - name: prometheus_server
-          value: :2113
+          value: :2112
         securityContext:
           capabilities:
             add:
