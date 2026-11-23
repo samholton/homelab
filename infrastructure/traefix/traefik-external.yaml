@@ -43,9 +43,8 @@ spec:
     metrics:
       prometheus:
         enabled: true
-    service:
-      type: LoadBalancer
-      loadBalancerIP: 192.168.100.17
+    serviceAnnotations:
+      kube-vip.io/loadbalancerIPs: 192.168.100.17
     deployment:
       resources:
         requests:
