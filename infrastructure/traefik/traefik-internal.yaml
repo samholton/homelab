@@ -25,6 +25,7 @@ spec:
           enabled: true
       kubernetesGateway:
         enabled: true
+        labelSelector: "gateway-instance=internal"
     gatewayAPI:
       enabled: true
     ports:
