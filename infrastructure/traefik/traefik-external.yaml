@@ -8,12 +8,17 @@ spec:
   chart:
     spec:
       chart: traefik
-      version: '35.0.0'
+      version: '42.4.1'
       sourceRef:
         kind: HelmRepository
         name: traefik
         namespace: flux-system
   values:
+    gatewayClass:
+      enabled: true
+      name: traefik-external
+      labels:
+        gateway-instance: external
     kind: Deployment
     replicas: 2
     globalArguments: []
@@ -25,9 +30,7 @@ spec:
           enabled: true
       kubernetesGateway:
         enabled: true
-        labelSelector: "gateway-instance=external"
-    gatewayAPI:
-      enabled: true
+        gatewayClass: "traefik-external"
     ports:
       traefik:
         port: 8080
