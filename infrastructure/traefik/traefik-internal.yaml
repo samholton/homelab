@@ -16,7 +16,6 @@ spec:
   values:
     kind: Deployment
     replicas: 2
-    replicasPerNode: false
     globalArguments: []
     providers:
       kubernetesIngress:
@@ -46,6 +45,8 @@ spec:
     service:
       annotations:
         kube-vip.io/loadbalancerIPs: 192.168.100.18
+      spec:
+        externalTrafficPolicy: Local
     deployment:
       resources:
         requests:
