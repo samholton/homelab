@@ -19,9 +19,19 @@ spec:
       name: traefik-internal
       labels:
         gateway-instance: internal
-    kind: Deployment
-    replicas: 2
-    globalArguments: []
+    deployment:
+      kind: Deployment
+      replicas: 2
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
     providers:
       kubernetesIngress:
         enabled: true
@@ -40,9 +50,8 @@ spec:
       websecure:
         port: 8443
         exposedPort: 443
-    logs:
-      general:
-        level: ERROR
+    log:
+      level: ERROR
     metrics:
       prometheus:
         enabled: true
@@ -51,14 +60,3 @@ spec:
         kube-vip.io/loadbalancerIPs: 192.168.100.18
       spec:
         externalTrafficPolicy: Local
-    deployment:
-      resources:
-        requests:
-          cpu: 100m
-          memory: 128Mi
-        limits:
-          cpu: 500m
-          memory: 512Mi
-    tolerations:
-      - key: node-role.kubernetes.io/control-plane
-        effect: NoSchedule
