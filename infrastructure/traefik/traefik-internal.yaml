@@ -40,7 +40,7 @@ spec:
           enabled: true
       kubernetesGateway:
         enabled: true
-        gatewayClass: "traefik-internal"
+        labelSelector: "gateway-instance=internal"
     ports:
       traefik:
         port: 8080

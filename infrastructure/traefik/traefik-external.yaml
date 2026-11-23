@@ -40,7 +40,7 @@ spec:
           enabled: true
       kubernetesGateway:
         enabled: true
-        gatewayClass: "traefik-external"
+        labelSelector: "gateway-instance=external"
     ports:
       traefik:
         port: 8080
