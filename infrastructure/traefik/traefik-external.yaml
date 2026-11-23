@@ -14,15 +14,13 @@ spec:
         name: traefik
         namespace: flux-system
   values:
+    commonLabels:
+      gateway-instance: external
     gatewayClass:
       enabled: true
       name: traefik-external
-      labels:
-        gateway-instance: external
     gateway:
       name: traefik-external
-      labels:
-        gateway-instance: external
       listeners:
         web:
           port: 8000

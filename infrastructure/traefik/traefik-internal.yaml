@@ -14,15 +14,13 @@ spec:
         name: traefik
         namespace: flux-system
   values:
+    commonLabels:
+      gateway-instance: internal
     gatewayClass:
       enabled: true
       name: traefik-internal
-      labels:
-        gateway-instance: internal
     gateway:
       name: traefik-internal
-      labels:
-        gateway-instance: internal
       listeners:
         web:
           port: 8000
