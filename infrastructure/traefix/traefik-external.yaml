@@ -44,9 +44,8 @@ spec:
       prometheus:
         enabled: true
     service:
-      spec:
-        type: LoadBalancer
-        ip: 192.168.100.17
+      type: LoadBalancer
+      loadBalancerIP: 192.168.100.17
     deployment:
       resources:
         requests:
