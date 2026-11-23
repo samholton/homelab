@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: samholton-wildcard
+  namespace: traefik
+spec:
+  secretName: samholton-wildcard
+  issuerRef:
+    name: letsencrypt-prod-cloudflare
+    kind: ClusterIssuer
+  commonName: '*.samholton.com'
+  dnsNames:
+    - '*.samholton.com'
+    - 'samholton.com'
