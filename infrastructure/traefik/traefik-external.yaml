@@ -19,6 +19,24 @@ spec:
       name: traefik-external
       labels:
         gateway-instance: external
+    gateway:
+      name: traefik-external
+      labels:
+        gateway-instance: external
+      listeners:
+        web:
+          port: 8000
+          protocol: HTTP
+          namespacePolicy:
+            from: All
+        https:
+          port: 8443
+          protocol: HTTPS
+          namespacePolicy:
+            from: All
+          certificateRefs:
+            - kind: Secret
+              name: samholton-wildcard
     deployment:
       kind: Deployment
       replicas: 2
