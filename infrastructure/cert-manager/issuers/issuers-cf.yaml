@@ -14,5 +14,3 @@ spec:
           apiTokenSecretRef:
             name: cloudflare-api-token
             key: cloudflare-api-token
-      zones:
-        - samholton.com
