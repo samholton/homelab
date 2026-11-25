@@ -58,22 +58,17 @@ spec:
         ports:
           http:
             port: 9000
-    ingress:
+    route:
       main:
-        className: nginx-external
-        annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-prod"
-        hosts:
-          - host: &host mealie.samholton.com
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - hosts:
-              - *host
-            secretName: mealie-tls
+        hostnames:
+          - mealie.samholton.com
+        parentRefs:
+          - name: traefik-internal
+            namespace: traefik
+        rules:
+          - backendRefs:
+              - name: mealie
+                port: 9000
     persistence:
       data:
         existingClaim: mealie-data
