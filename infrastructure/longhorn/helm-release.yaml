@@ -6,9 +6,12 @@ metadata:
 spec:
   interval: 1h
   install:
+    remediation:
+      retries: 3
+  upgrade:
     force: true
-  remediation:
-    retries: 3
+    remediation:
+      retries: 3
   chart:
     spec:
       chart: longhorn
