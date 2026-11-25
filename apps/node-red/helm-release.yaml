@@ -30,22 +30,17 @@ spec:
         ports:
           http:
             port: 1880
-    ingress:
+    route:
       main:
-        className: nginx-internal
-        annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-prod"
-        hosts:
-          - host: &host node-red.samholton.com
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - hosts:
-              - *host
-            secretName: node-red-tls
+        hostnames:
+          - node-red.samholton.com
+        parentRefs:
+          - name: traefik-internal
+            namespace: traefik
+        rules:
+          - backendRefs:
+              - identifier: main
+                port: http
     persistence:
       data:
         existingClaim: node-red-data
