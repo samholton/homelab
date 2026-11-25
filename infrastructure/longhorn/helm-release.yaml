@@ -5,6 +5,13 @@ metadata:
   namespace: longhorn-system
 spec:
   interval: 1h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    force: true
+    remediation:
+      retries: 3
   chart:
     spec:
       chart: longhorn
@@ -23,7 +30,7 @@ spec:
       defaultDataLocality: disabled
       reclaimPolicy: Delete
       dataEngine: v1
-      disableRevisionCounter: '{"v1":"true"}'
+      disableRevisionCounter: "true"
     httproute:
       enabled: true
       parentRefs:
