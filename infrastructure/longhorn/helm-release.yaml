@@ -8,13 +8,14 @@ spec:
   chart:
     spec:
       chart: longhorn
-      version: '1.8.2'
+      version: '1.13.0'
       sourceRef:
         kind: HelmRepository
         name: longhorn
         namespace: flux-system
       interval: 1h
   values:
+    # -- Persistence / storage defaults
     persistence:
       defaultClass: true
       defaultFsType: ext4
@@ -22,6 +23,21 @@ spec:
       defaultDataLocality: disabled
       reclaimPolicy: Delete
       dataEngine: v1
-      disableRevisionCounter: "true"
+      disableRevisionCounter: '{"v1":"true"}'
+    # -- HTTPRoute via Gateway API (replaces standalone http-route.yaml)
+    httproute:
+      enabled: true
+      parentRefs:
+        - name: traefik-internal
+          namespace: traefik
+      hostnames:
+        - longhorn.samholton.com
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            name: longhorn-authentik
+            kind: Middleware
+            group: traefik.io
+    # -- Disable Helm-managed ingress (we use httproute instead)
     ingress:
       enabled: false
