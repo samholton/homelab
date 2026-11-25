@@ -67,8 +67,8 @@ spec:
             namespace: traefik
         rules:
           - backendRefs:
-              - name: mealie
-                port: 9000
+              - identifier: main
+                port: http
     persistence:
       data:
         existingClaim: mealie-data

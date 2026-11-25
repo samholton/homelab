@@ -72,23 +72,17 @@ spec:
         ports:
           service:
             port: 6379
-    ingress:
+    route:
       main:
-        className: nginx-internal
-        annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-prod"
-          nginx.ingress.kubernetes.io/proxy-body-size: 1G
-        hosts:
-          - host: &host paperless.samholton.com
-            paths:
-              - path: /
-                service:
-                  identifier: paperless
-                  port: http
-        tls:
-          - hosts:
-              - *host
-            secretName: paperless-tls
+        hostnames:
+          - paperless.samholton.com
+        parentRefs:
+          - name: traefik-internal
+            namespace: traefik
+        rules:
+          - backendRefs:
+              - identifier: paperless
+                port: http
     persistence:
       data:
         existingClaim: paperless-data
