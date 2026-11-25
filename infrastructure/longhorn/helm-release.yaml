@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: longhorn
-      version: '1.9.2'
+      version: '1.10.2'
       sourceRef:
         kind: HelmRepository
         name: longhorn
@@ -23,6 +23,6 @@ spec:
       defaultDataLocality: disabled
       reclaimPolicy: Delete
       dataEngine: v1
-      disableRevisionCounter: "true"
+      disableRevisionCounter: '{"v1":"true"}'
     ingress:
       enabled: false
