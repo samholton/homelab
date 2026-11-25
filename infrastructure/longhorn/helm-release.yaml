@@ -15,7 +15,7 @@ spec:
   chart:
     spec:
       chart: longhorn
-      version: '1.12.2'
+      version: '1.13.0'
       sourceRef:
         kind: HelmRepository
         name: longhorn
@@ -31,5 +31,18 @@ spec:
       reclaimPolicy: Delete
       dataEngine: v1
       disableRevisionCounter: "true"
+    httproute:
+      enabled: true
+      parentRefs:
+        - name: traefik-internal
+          namespace: traefik
+      hostnames:
+        - longhorn.samholton.com
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            name: longhorn-authentik
+            kind: Middleware
+            group: traefik.io
     ingress:
       enabled: false
