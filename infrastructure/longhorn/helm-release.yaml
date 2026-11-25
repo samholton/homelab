@@ -18,7 +18,7 @@ spec:
     persistence:
       defaultClass: true
       defaultFsType: ext4
-      defaultClassReplicaCount: 3
+      defaultClassReplicaCount: 2
       defaultDataLocality: disabled
       reclaimPolicy: Delete
       dataEngine: v1
