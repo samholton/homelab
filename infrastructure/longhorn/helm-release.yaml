@@ -31,12 +31,5 @@ spec:
       reclaimPolicy: Delete
       dataEngine: v1
       disableRevisionCounter: "true"
-    httproute:
-      enabled: true
-      parentRefs:
-        - name: traefik-internal
-          namespace: traefik
-      hostnames:
-        - longhorn.samholton.com
     ingress:
       enabled: false

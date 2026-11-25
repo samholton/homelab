@@ -1,0 +1,21 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  hostnames:
+    - longhorn.samholton.com
+  parentRefs:
+    - name: traefik-internal
+      namespace: traefik
+  rules:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            name: longhorn-authentik
+            kind: Middleware
+            group: traefik.io
+      backendRefs:
+        - name: longhorn-frontend
+          port: 80
