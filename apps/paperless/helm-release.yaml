@@ -81,8 +81,8 @@ spec:
             namespace: traefik
         rules:
           - backendRefs:
-              - name: paperless
-                port: 8000
+              - identifier: paperless
+                port: http
     persistence:
       data:
         existingClaim: paperless-data

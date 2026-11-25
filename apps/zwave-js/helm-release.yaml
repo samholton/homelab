@@ -73,8 +73,8 @@ spec:
                   kind: Middleware
                   group: traefik.io
             backendRefs:
-              - name: zwave-js
-                port: 8091
+              - identifier: main
+                port: http
     persistence:
       zwave-usb:
         enabled: true
