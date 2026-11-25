@@ -5,8 +5,6 @@ metadata:
   namespace: traefik
 spec:
   interval: 1h
-  dependsOn:
-    - name: gateway-api-crds
   chart:
     spec:
       chart: traefik
