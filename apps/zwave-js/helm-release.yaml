@@ -71,7 +71,7 @@ spec:
                 extensionRef:
                   name: authentik-forward-auth
                   kind: Middleware
-                  apiGroup: traefik.io
+                  group: traefik.io
             backendRefs:
               - name: zwave-js
                 port: 8091
