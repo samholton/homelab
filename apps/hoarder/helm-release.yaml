@@ -71,22 +71,17 @@ spec:
         ports:
           http:
             port: 7700
-    ingress:
-      main:
-        className: nginx-internal
-        annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-prod
-        hosts:
-          - host: &host hoarder.samholton.com
-            paths:
-              - path: /
-                service:
-                  identifier: web
-                  port: http
-        tls:
-          - hosts:
-              - *host
-            secretName: hoarder-tls
+    route:
+      web:
+        hostnames:
+          - hoarder.samholton.com
+        parentRefs:
+          - name: traefik-internal
+            namespace: traefik
+        rules:
+          - backendRefs:
+              - identifier: web
+                port: http
     persistence:
       web:
         existingClaim: hoarder-storage
