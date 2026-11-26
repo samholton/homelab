@@ -1,0 +1,101 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: "50.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+      interval: 1h
+  values:
+    prometheus:
+      prometheusSpec:
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: freenas-nfs-csi-no-backup
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 35Gi
+    grafana:
+      defaultDashboardsTimezone: browser
+      admin:
+        existingSecret: monitoring-secret
+        userKey: admin-user
+        passwordKey: admin-password
+      persistence:
+        enabled: true
+        storageClassName: longhorn
+        size: 2Gi
+      envValueFrom:
+        - name: GF_AUTH_GENERIC_OAUTH_CLIENT_ID
+          secretKeyRef:
+            name: monitoring-secret
+            key: grafana-oauth-client-id
+        - name: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+          secretKeyRef:
+            name: monitoring-secret
+            key: grafana-oauth-client-secret
+        - name: GF_SMTP_HOST
+          secretKeyRef:
+            name: monitoring-secret
+            key: smtp-host
+        - name: GF_SMTP_USER
+          secretKeyRef:
+            name: monitoring-secret
+            key: smtp-user
+        - name: GF_SMTP_PASSWORD
+          secretKeyRef:
+            name: monitoring-secret
+            key: smtp-password
+        - name: GF_SMTP_FROM_ADDRESS
+          secretKeyRef:
+            name: monitoring-secret
+            key: smtp-from-address
+        - name: GF_SMTP_FROM_NAME
+          secretKeyRef:
+            name: monitoring-secret
+            key: smtp-from-name
+      additionalDataSources:
+        - access: proxy
+          isDefault: false
+          name: loki
+          orgId: 1
+          type: loki
+          url: http://loki.loki:3100
+          version: 1
+      grafana.ini:
+        server:
+          root_url: https://grafana.samholton.com
+        auth:
+          signout_redirect_url: https://authentik.samholton.com/application/o/grafana/end-session/
+          oauth_auto_login: false
+        auth.generic_oauth:
+          name: authentik
+          enabled: true
+          scopes: openid email profile
+          auth_url: https://authentik.samholton.com/application/o/authorize/
+          token_url: https://authentik.samholton.com/application/o/token/
+          api_url: https://authentik.samholton.com/application/o/userinfo/
+          role_attribute_path: contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'
+    alertmanager:
+      alertmanagerSpec:
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: freenas-nfs-csi-no-backup
+              resources:
+                requests:
+                  storage: 2Gi
+    nodeExporter:
+      enabled: true
+    kubeStateMetrics:
+      enabled: true
