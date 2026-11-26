@@ -8,15 +8,21 @@ spec:
   chart:
     spec:
       chart: kube-prometheus-stack
-      version: "50.0.0"
+      version: "93.11.0"
       sourceRef:
         kind: HelmRepository
         name: prometheus-community
         namespace: flux-system
-      interval: 1h
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
   values:
+    fullnameOverride: prometheus
     prometheus:
       prometheusSpec:
+        retention: 10d
+        walCompression: true
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -25,53 +31,138 @@ spec:
               resources:
                 requests:
                   storage: 35Gi
+        ruleSelectorNilUsesHelmValues: false
+        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelectorNilUsesHelmValues: false
+        probeSelectorNilUsesHelmValues: false
+
+    alertmanager:
+      enabled: true
+      alertmanagerSpec:
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: freenas-nfs-csi-no-backup
+              resources:
+                requests:
+                  storage: 2Gi
+      config:
+        global:
+          resolve_timeout: 5m
+        route:
+          group_by:
+            - namespace
+            - alertname
+          group_interval: 5m
+          group_wait: 30s
+          receiver: blackhole
+          repeat_interval: 12h
+          routes:
+            - matchers:
+                - alertname = Watchdog
+              receiver: blackhole
+        receivers:
+          - name: blackhole
+
     grafana:
+      enabled: true
       defaultDashboardsTimezone: browser
+      defaultDashboardsEnabled: true
+
       admin:
         existingSecret: monitoring-secret
         userKey: admin-user
         passwordKey: admin-password
+
       persistence:
         enabled: true
         storageClassName: longhorn
         size: 2Gi
+
+      env:
+        GF_SERVER_ROOT_URL: https://grafana.samholton.com
+        GF_SMTP_ENABLED: "true"
+        GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
+        GF_AUTH_GENERIC_OAUTH_SCOPES: openid email profile
+        GF_AUTH_GENERIC_OAUTH_AUTH_URL: https://authentik.samholton.com/application/o/authorize/
+        GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://authentik.samholton.com/application/o/token/
+        GF_AUTH_GENERIC_OAUTH_API_URL: https://authentik.samholton.com/application/o/userinfo/
+        GF_AUTH_GENERIC_OAUTH_ALLOWED_AUTHENTICATORS: ak-provider-oidc
+        GF_AUTH_SIGNOUT_REDIRECT_URL: https://authentik.samholton.com/application/o/grafana/end-session/
+        GF_AUTH_GENERIC_OAUTH_NAME: authentik
+        GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'"
+        GF_AUTH_GENERIC_OAUTH_LOGIN_USERNAME: preferred_username
+
       envValueFrom:
-        - name: GF_AUTH_GENERIC_OAUTH_CLIENT_ID
+        GF_AUTH_GENERIC_OAUTH_CLIENT_ID:
           secretKeyRef:
             name: monitoring-secret
             key: grafana-oauth-client-id
-        - name: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+        GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
           secretKeyRef:
             name: monitoring-secret
             key: grafana-oauth-client-secret
-        - name: GF_SMTP_HOST
+        GF_SMTP_HOST:
           secretKeyRef:
             name: monitoring-secret
             key: smtp-host
-        - name: GF_SMTP_USER
+        GF_SMTP_USER:
           secretKeyRef:
             name: monitoring-secret
             key: smtp-user
-        - name: GF_SMTP_PASSWORD
+        GF_SMTP_PASSWORD:
           secretKeyRef:
             name: monitoring-secret
             key: smtp-password
-        - name: GF_SMTP_FROM_ADDRESS
+        GF_SMTP_FROM_ADDRESS:
           secretKeyRef:
             name: monitoring-secret
             key: smtp-from-address
-        - name: GF_SMTP_FROM_NAME
+        GF_SMTP_FROM_NAME:
           secretKeyRef:
             name: monitoring-secret
             key: smtp-from-name
-      additionalDataSources:
-        - access: proxy
-          isDefault: false
-          name: loki
-          orgId: 1
-          type: loki
-          url: http://loki.loki:3100
-          version: 1
+
+      sidecar:
+        datasources:
+          enabled: true
+          label: grafana_datasource
+          labelValue: "1"
+        dashboards:
+          enabled: true
+          label: grafana_dashboard
+          labelValue: "1"
+          searchNamespace: ALL
+        notifiers:
+          enabled: true
+          label: grafana_notifier
+          labelValue: "1"
+          searchNamespace: null
+          resource: both
+        alerts:
+          enabled: true
+          label: grafana_alert
+          labelValue: "1"
+          searchNamespace: null
+          resource: both
+
+      datasources:
+        prometheus:
+          url: http://prometheus-prometheus.monitoring:9090/
+          uid: prometheus
+          isDefault: true
+          jsonData:
+            httpMethod: POST
+            timeInterval: 30s
+        alertmanager:
+          url: http://prometheus-alertmanager.monitoring:9093/
+          uid: alertmanager
+          jsonData:
+            handleGrafanaManagedAlerts: false
+            implementation: prometheus
+
+      additionalDataSources: []
+
       grafana.ini:
         server:
           root_url: https://grafana.samholton.com
@@ -85,17 +176,49 @@ spec:
           auth_url: https://authentik.samholton.com/application/o/authorize/
           token_url: https://authentik.samholton.com/application/o/token/
           api_url: https://authentik.samholton.com/application/o/userinfo/
-          role_attribute_path: contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'
-    alertmanager:
-      alertmanagerSpec:
-        storage:
-          volumeClaimTemplate:
-            spec:
-              storageClassName: freenas-nfs-csi-no-backup
-              resources:
-                requests:
-                  storage: 2Gi
+          role_attribute_path: "contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'"
+
+      dashboardProviders:
+        dashboardproviders.yaml:
+          apiVersion: 1
+          providers:
+            - name: default
+              orgId: 1
+              folder: ""
+              type: file
+              disableDeletion: false
+              editable: true
+              options:
+                path: /tmp/dashboards
+                foldersFromFilesStructure: true
+
+      route:
+        main:
+          enabled: true
+          apiVersion: gateway.networking.k8s.io/v1
+          kind: HTTPRoute
+          hostnames:
+            - "grafana.samholton.com"
+          parentRefs:
+            - name: traefik-internal
+              namespace: traefik
+              sectionName: https
+          matches:
+            - path:
+                type: PathPrefix
+                value: /
+
     nodeExporter:
       enabled: true
     kubeStateMetrics:
       enabled: true
+    kubeApiServer:
+      enabled: true
+    kubeControllerManager:
+      enabled: true
+    kubeScheduler:
+      enabled: true
+    kubeEtcd:
+      enabled: true
+    kubeProxy:
+      enabled: false
