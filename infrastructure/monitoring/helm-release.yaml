@@ -136,14 +136,12 @@ spec:
         alerts:
           enabled: true
 
-      extraVolumes:
-        - name: grafana-contact-points
-          secret:
-            secretName: grafana-contact-points
-      extraVolumeMounts:
+      extraSecretMounts:
         - name: grafana-contact-points
           mountPath: /etc/grafana/provisioning/alerting/contact-points.yaml
           subPath: contact-points.yaml
+          secretName: grafana-contact-points
+          readOnly: true
 
       datasources:
         prometheus:
