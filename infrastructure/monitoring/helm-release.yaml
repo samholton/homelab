@@ -141,10 +141,6 @@ spec:
           resource: both
         alerts:
           enabled: true
-          label: grafana_alert
-          labelValue: "1"
-          searchNamespace: null
-          resource: both
 
       datasources:
         prometheus:
