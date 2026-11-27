@@ -133,14 +133,17 @@ spec:
           label: grafana_dashboard
           labelValue: "1"
           searchNamespace: ALL
-        notifiers:
-          enabled: true
-          label: grafana_notifier
-          labelValue: "1"
-          searchNamespace: null
-          resource: both
         alerts:
           enabled: true
+
+      extraVolumes:
+        - name: grafana-contact-points
+          secret:
+            secretName: grafana-contact-points
+      extraVolumeMounts:
+        - name: grafana-contact-points
+          mountPath: /etc/grafana/provisioning/alerting/contact-points.yaml
+          subPath: contact-points.yaml
 
       datasources:
         prometheus:
