@@ -30,6 +30,9 @@ data:
                   intervalMs: 1000
                   maxDataPoints: 43200
                   queryType: instant
+                  relativeTimeRange:
+                    from: 172800
+                    to: 0
                   refId: A
               - refId: C
                 datasourceUid: __expr__
