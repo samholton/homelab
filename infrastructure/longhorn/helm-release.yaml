@@ -5,17 +5,10 @@ metadata:
   namespace: longhorn-system
 spec:
   interval: 1h
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    force: true
-    remediation:
-      retries: 3
   chart:
     spec:
       chart: longhorn
-      version: '1.13.0'
+      version: '1.9.2'
       sourceRef:
         kind: HelmRepository
         name: longhorn
@@ -31,18 +24,5 @@ spec:
       reclaimPolicy: Delete
       dataEngine: v1
       disableRevisionCounter: "true"
-    httproute:
-      enabled: true
-      parentRefs:
-        - name: traefik-internal
-          namespace: traefik
-      hostnames:
-        - longhorn.samholton.com
-      filters:
-        - type: ExtensionRef
-          extensionRef:
-            name: longhorn-authentik
-            kind: Middleware
-            group: traefik.io
     ingress:
       enabled: false
