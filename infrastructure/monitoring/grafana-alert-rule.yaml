@@ -28,8 +28,7 @@ data:
                     type: loki
                     uid: loki
                   editorMode: code
-                  expr: >
-                    sum(count_over_time({namespace="vaultwarden"} |= "Username or password is incorrect" [2m])) > 0
+                  expr: 'sum(count_over_time({namespace="vaultwarden"} |= "Username or password is incorrect" | regexp "(?P<log>.+)" [2m])) by (log)'
                   intervalMs: 1000
                   maxDataPoints: 43200
                   queryType: instant
@@ -65,6 +64,9 @@ data:
             labels:
               severity: warning
               team: security
+            annotations:
+              summary: "Failed Vaultwarden login attempt"
+              description: "Log line: {{ $labels.log }}"
             noDataState: NoData
             execErrState: Alerting
             for: 1m
